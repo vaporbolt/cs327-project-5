@@ -14,9 +14,6 @@ import pylab as plt
 # The following is needed to take arguments from command line
 import sys
 
-def getDegree(node, graph1):
-    return graph1.degree(node)
-
 
 def lookUpCountrtryOne (inIP):
     GEOIP = pygeoip.GeoIP("GeoIP.dat", pygeoip.MEMORY_CACHE)
@@ -24,103 +21,109 @@ def lookUpCountrtryOne (inIP):
     return country
 
 def load_and_display_file():
-    # graph1 = nx.read_graphml('127.0.1.1_l14340.cs.jmu.edu_2018-03-18-06-45-12-700579-bitcoingraph-cleaned.graphml')
+    #graph1 = nx.read_graphml('127.0.1.1_l14340.cs.jmu.edu_2018-03-18-06-45-12-700579-bitcoingraph-cleaned.graphml')
     graph1 = nx.read_graphml('small-bitcoingraph.graphml')
-    all_nodes = graph1.nodes()
-    #print ('Nodes: ', all_nodes)
-    print ('# of nodes: ', len(all_nodes))
 
-    all_edges = graph1.edges()
-    #print ('Edges: ', all_edges)
-    print ('# of edges: ', len(all_edges))
 
-    
-    # min = None
-    # max = None
+    print("1. How many Bitcoin nodes does the Bitcoin network in the data file have?")
+    all_nodes = graph1.nodes() #Question 1
+    print ('    # of nodes: ', len(all_nodes))
+    print("\n")
+
+    print("2. How many edges does the Bitcoin network in the data file have?")
+    all_edges = graph1.edges() #Question 2
+    print ('    # of edges: ', len(all_edges))
+    print("\n")
+
     max_set = []
     min_set = []
     first = True
 
-   
+    top10 = []
+    countries = {}
+    count = 0
+    for node in all_nodes:
 
-    sorted_dict = sorted(graph1.keys(), key = getDegree, reverse = True)
-
-    for x in sorted_dict:
-        print(x)
-
-
-    # for node in all_nodes: 
-    #     if first:
-    #         min = graph1.degree(node)
-    #         max = graph1.degree(node)
-    #         first = False
+        if first:
+            min = graph1.degree(node)
+            max = graph1.degree(node)
+            first = False
         
+        if len(top10) < 10: #Question 5
+            top10.append(node)
+            top10.sort(key = lambda node: graph1.degree(node), reverse = False)
+        
+        elif graph1.degree(node) > graph1.degree(top10[0]): #Question 5
+            top10[0] = node
+            top10.sort(key = lambda node: graph1.degree(node), reverse = False)
 
-    #     if graph1.degree(node) > max:
-    #         max = graph1.degree(node)
-    #         max_set.clear()
+        cur_country = lookUpCountrtryOne(node) #Question 6
+        if countries.get(cur_country) is None and not cur_country.isspace():
+            count+=1
+            countries[cur_country] = []
+            countries.get(cur_country).append(node)
+        else:
+            countries.get(cur_country).append(node)
 
-    #     if graph1.degree(node) == max:
-    #         max_set.append(node)
+        if graph1.degree(node) > max: #Question 3
+            max = graph1.degree(node)
+            max_set.clear()
 
-    #     if graph1.degree(node) < min:
-    #         max = graph1.degree(node)
-    #         max_set.clear()
+        if graph1.degree(node) == max: #Question 3
+            max_set.append(node)
 
-    #     if graph1.degree(node) == min:
-    #         min_set.append(node)
+        if graph1.degree(node) < min: #Question 4
+            max = graph1.degree(node)
+            max_set.clear()
 
-    #     print ("Node PRINTER: " + node + ": degree = ",  + graph1.degree(node))
+        if graph1.degree(node) == min: #Question 4
+            min_set.append(node)
 
+        #print ("Node PRINTER: " + node + ": degree = ",  + graph1.degree(node))
 
-    # print("Min degree is : \n", min)
-    # # printing the list using loop
-    # print("Nodes with this degree include :\n")
-    # for x in range(len(min_set)):
-    #     print (min_set[x] + " : " + lookUpCountrtryOne(min_set[x]))
+    top10.sort(key = lambda node: graph1.degree(node), reverse = True)
+
     # print("Max degree is : \n", max)
     # print("Nodes with this degree include :\n")
-    # for x in range(len(max_set)):
-    #     print (max_set[x])
+    print("3. What is the largest node degree? Which nodes have this degree?")
+    print("    ", max)
+    for x in range(len(max_set)):
+        print ("    ", max_set[x])
+    print("\n")
+
+    # print("Min degree is : \n", min)
+    # print("Nodes with this degree include :\n")
+    print("4. What is the smallest node degree? Which nodes have this degree?")
+    print("    ", min)
+    for x in range(len(min_set)):
+        print (min_set[x] + " , ", end = "")
+    print("\n")
     
 
-
-
-
+    # print("----------------------------------------")
+    print("5. Find out the 10 nodes that have the highest degrees. Print out, in the descending order of degrees,\n (IP address, Degree, Country)")
+    for x in top10:
+        print("    ", x , ", ", end="")
+        print(graph1.degree(x), ", ", end="")
+        print(lookUpCountrtryOne(x))
+    print("\n")
+    # print("----------------------------------------")
+    print("6. Find the five countries that have the highest number of Bitcoin nodes. Print out, in the descending order of node numbers,\n (Country: # of nodes in country)")
+    top5 = []
+    for country in countries:
+        if len(top5) < 5:
+            top5.append(country)
+            top5.sort(key = lambda currentCurrentCount: len(countries.get(currentCurrentCount)), reverse=False)
+        elif len(countries.get(country)) > len(top5[0]):
+            top5[0] = country
+    top5.sort(key = lambda currentCurrentCount: len(countries.get(currentCurrentCount)), reverse=True)  
+    for x in top5:
+        if x is None:
+            print("N/A")
+        else:
+            print("    ", x, ": ", end="")
         
-
-# def create_new_graph ():
-#     g2 = nx.Graph()
-
-#     # The following line adds a node a to the graph
-#     g2.add_node ('a')
-
-#     # This will add an edge (a, b) with weight 0.1
-#     # It automatically adds node b too
-#     g2.add_edge('a', 'b', weight=0.1)
-
-#     # This will add an edge (b, c) with weight 1.5
-#     g2.add_edge('b', 'c', weight=1.5)
-
-#     # This will add an edge (a, c) with weight 1.0
-#     g2.add_edge('a', 'c', weight=1.0)
-
-#     # This will add an edge (c, d) with weight 2.2
-#     g2.add_edge('c', 'd', weight=2.2)
-
-#     # This will add an edge (e, f) with weight 10
-#     # It automatically adds nodes e & f too
-#     g2.add_edge('e', 'f', weight=10)
-
-#     # The following line prints all existing nodes in graph g2
-#     print ("List of nodes: " + str(g2.nodes()))
-#     # The following line prints all edges nodes in graph g2
-#     print ("List of edges: " + str(g2.edges()))
-#     # The following line prints every node and its degree
-#     for node in g2.nodes(): 
-#         print ("Node " + node + ": degree = " + str(g2.degree(node)))
-
-#     return g2
+        print(len(countries.get(x)))
 
 def draw_graph (inGraph, inPngFilename):
     # The following line draws graph inGraph
@@ -138,10 +141,6 @@ def save_graph_to_file(inGraph, inFilename):
 
 def main():
     load_and_display_file()
-
-    #g2 = create_new_graph ()
-    # draw_graph (g2, 'cs327-graph.png')
-    # save_graph_to_file(g2, 'cs327-created-graph.graphml')
 
 if __name__ == "__main__":
     main()
