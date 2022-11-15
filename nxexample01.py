@@ -57,12 +57,18 @@ def load_and_display_file():
             top10[0] = node
             top10.sort(key = lambda node: graph1.degree(node), reverse = False)
 
-        cur_country = lookUpCountrtryOne(node) #Question 6
-        if countries.get(cur_country) is None and not cur_country.isspace():
+        cur_country = lookUpCountrtryOne(node) #Question 6r
+
+        cur_country = cur_country.strip()
+
+
+
+        if countries.get(cur_country) is None and not len(cur_country) == 0:
             count+=1
             countries[cur_country] = []
             countries.get(cur_country).append(node)
-        else:
+        
+        elif len(cur_country) != 0:
             countries.get(cur_country).append(node)
 
         if graph1.degree(node) > max: #Question 3
