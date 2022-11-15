@@ -21,8 +21,10 @@ def lookUpCountrtryOne (inIP):
     return country
 
 def load_and_display_file():
-    #graph1 = nx.read_graphml('127.0.1.1_l14340.cs.jmu.edu_2018-03-18-06-45-12-700579-bitcoingraph-cleaned.graphml')
-    graph1 = nx.read_graphml('small-bitcoingraph.graphml')
+    graph1 = nx.read_graphml('127.0.1.1_l14340.cs.jmu.edu_2018-03-18-06-45-12-700579-bitcoingraph-cleaned.graphml')
+    #graph1 = nx.read_graphml('small-bitcoingraph.graphml')
+    draw_graph (graph1, 'cs327-graph.png')
+    save_graph_to_file(graph1, 'cs327-created-graph.graphml')
 
 
     print("1. How many Bitcoin nodes does the Bitcoin network in the data file have?")
@@ -79,28 +81,23 @@ def load_and_display_file():
             max_set.append(node)
 
         if graph1.degree(node) < min: #Question 4
-            max = graph1.degree(node)
-            max_set.clear()
+            min = graph1.degree(node)
+            min_set.clear()
 
         if graph1.degree(node) == min: #Question 4
             min_set.append(node)
 
-        #print ("Node PRINTER: " + node + ": degree = ",  + graph1.degree(node))
-
     top10.sort(key = lambda node: graph1.degree(node), reverse = True)
 
-    # print("Max degree is : \n", max)
-    # print("Nodes with this degree include :\n")
     print("3. What is the largest node degree? Which nodes have this degree?")
     print("    ", max)
     for x in range(len(max_set)):
         print ("    ", max_set[x])
     print("\n")
 
-    # print("Min degree is : \n", min)
-    # print("Nodes with this degree include :\n")
     print("4. What is the smallest node degree? Which nodes have this degree?")
     print("    ", min)
+    print("    ", end="")
     for x in range(len(min_set)):
         print (min_set[x] + " , ", end = "")
     print("\n")
