@@ -14,14 +14,16 @@ import pylab as plt
 # The following is needed to take arguments from command line
 import sys
 
+graph_file_name = sys.argv[1]
+geo_ip_directory = sys.argv[2]
 
 def lookUpCountrtryOne (inIP):
-    GEOIP = pygeoip.GeoIP("GeoIP.dat", pygeoip.MEMORY_CACHE)
+    GEOIP = pygeoip.GeoIP(geo_ip_directory, pygeoip.MEMORY_CACHE)
     country = GEOIP.country_name_by_addr(inIP)
     return country
 
 def load_and_display_file():
-    graph1 = nx.read_graphml('127.0.1.1_l14340.cs.jmu.edu_2018-03-18-06-45-12-700579-bitcoingraph-cleaned.graphml')
+    graph1 = nx.read_graphml(graph_file_name)
     #graph1 = nx.read_graphml('small-bitcoingraph.graphml')
     draw_graph (graph1, 'cs327-graph.png')
     save_graph_to_file(graph1, 'cs327-created-graph.graphml')
